@@ -1,0 +1,33 @@
+Description: Package the latest version of XAMPP
+Identifier: com.llamafilm.munki.xampp
+MinimumVersion: 2.3.0
+ParentRecipe: com.llamafilm.pkg.xampp
+
+Input:
+  COMPONENTS: xampp_core_files
+  MUNKI_REPO_SUBDIR: apps
+  NAME: xampp
+  pkginfo:
+    catalogs:
+    - testing
+    description: An easy to install Apache distribution containing MySQL, PHP, and Perl.
+    developer: Apache Friends
+    display_name: XAMPP
+    name: '%NAME%'
+    postinstall_script: |
+      #!/bin/sh
+      launchctl load /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
+      launchctl load /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
+    uninstall_script: |
+      #!/bin/sh
+      rm -rf /Applications/XAMPP
+      rm -rf /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
+      rm -rf /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
+    unattended_install: true
+    unattended_uninstall: true
+
+Process:
+- Processor: MunkiImporter
+  Arguments:
+    pkg_path: '%RECIPE_CACHE_DIR%/xampp-%version%.pkg'
+    repo_subdirectory: '%MUNKI_REPO_SUBDIR%'

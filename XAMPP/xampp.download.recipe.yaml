@@ -1,0 +1,19 @@
+Comment: Tested with version 8.2.4-0
+Description: Downloads the latest version of XAMPP
+Identifier: com.llamafilm.download.xampp
+MinimumVersion: 2.3.0
+
+Input:
+  NAME: xampp
+
+Process:
+- Processor: URLTextSearcher
+  Arguments:
+    re_pattern: <link>(?P<url>.*xampp-osx-(?P<version>.*)-installer\.dmg.*)<\/link>
+    url: https://sourceforge.net/projects/xampp/rss?path=/XAMPP%20Mac%20OS%20X
+
+- Processor: URLDownloader
+  Arguments:
+    filename: xampp-%version%.dmg
+
+- Processor: EndOfCheckPhase

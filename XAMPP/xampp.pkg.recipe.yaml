@@ -1,0 +1,48 @@
+Description: |
+  Package the latest version of XAMPP.
+  Available choices for COMPONENTS are either:
+  - xampp_core_files
+  - xampp_developer_files
+  - xampp_core_files,xampp_developer_files
+Identifier: com.llamafilm.pkg.xampp
+MinimumVersion: 2.3.0
+ParentRecipe: com.llamafilm.download.xampp
+
+Input:
+  COMPONENTS: xampp_core_files
+  NAME: xampp
+
+Process:
+- Processor: PkgRootCreator
+  Arguments:
+    pkgdirs:
+      root/private/tmp: '0777'
+      scripts: '0755'
+    pkgroot: '%RECIPE_CACHE_DIR%/payload'
+
+- Processor: Copier
+  Arguments:
+    destination_path: '%pkgroot%/root/private/tmp/xampp-osx-%version%-installer.app'
+    source_path: '%pathname%/xampp-osx-%version%-installer.app'
+
+- Processor: FileCreator
+  Comment: Make postinstall script for use in the package
+  Arguments:
+    file_content: |
+      #!/bin/sh
+      echo "Installing XAMPP..."
+      /private/tmp/xampp-osx-%version%-installer.app/Contents/MacOS/osx-x86_64 --mode unattended --enable-components %COMPONENTS%
+      chmod 644 /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
+      chmod 644 /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
+    file_mode: '0755'
+    file_path: '%RECIPE_CACHE_DIR%/payload/scripts/postinstall'
+
+- Processor: PkgCreator
+  Arguments:
+    pkg_request:
+      id: org.apachefriends.xampp
+      options: purge_ds_store
+      pkgname: '%NAME%-%version%'
+      pkgroot: '%RECIPE_CACHE_DIR%/payload/root'
+      scripts: '%RECIPE_CACHE_DIR%/payload/scripts'
+      version: '%version%'
