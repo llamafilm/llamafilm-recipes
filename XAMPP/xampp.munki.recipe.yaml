@@ -6,7 +6,7 @@ ParentRecipe: com.llamafilm.pkg.xampp
 Input:
   COMPONENTS: xampp_core_files
   MUNKI_REPO_SUBDIR: apps
-  NAME: xampp
+  NAME: XAMPP
   pkginfo:
     catalogs:
     - testing

@@ -10,7 +10,7 @@ ParentRecipe: com.llamafilm.download.xampp
 
 Input:
   COMPONENTS: xampp_core_files
-  NAME: xampp
+  NAME: XAMPP
 
 Process:
 - Processor: PkgRootCreator

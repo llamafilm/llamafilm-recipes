@@ -4,7 +4,7 @@ Identifier: com.llamafilm.download.xampp
 MinimumVersion: 2.3.0
 
 Input:
-  NAME: xampp
+  NAME: XAMPP
 
 Process:
 - Processor: URLTextSearcher

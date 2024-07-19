@@ -1,0 +1,44 @@
+Description: Import the latest build of Transkoder to Munki
+Identifier: com.llamafilm.munki.transkoder
+MinimumVersion: 2.3.0
+
+Input:
+  MUNKI_REPO_SUBDIR: apps
+  NAME: Transkoder
+  RELEASE: 2023_update2
+  BUILD: '61479'
+  pkginfo:
+    catalogs:
+    - testing
+    category: Creativity
+    description: Powerful dedicated 2K/4K transcoding application automates fast, high-quality digital file conversion at the highest performance for studios and VFX facilities involved in motion picture and high-end TV production.
+    developer: Colorfront
+    display_name: Transkoder
+    icon_name: Transkoder
+    name: '%NAME%'
+    requires:
+    - XAMPP
+    supported_architectures:
+    - arm64
+    unattended_install: true
+    unattended_uninstall: true
+
+Process:
+- Processor: PackageRequired
+  Arguments:
+    PKG: '%CACHE_DIR%/colorfront-osd-%RELEASE%-%BUILD%.pkg'
+
+- Processor: EndOfCheckPhase
+
+- Processor: CodeSignatureVerifier
+  Arguments:
+    input_path: '%PKG%'
+    expected_authority_names:
+    - 'Developer ID Installer: COLORFRONT SYSTEMS Informatikai es Kiado Korlatolt Felelossegu Tarsasag (594CX8UD62)'
+    - 'Developer ID Certification Authority'
+    - 'Apple Root CA'
+
+- Processor: MunkiImporter
+  Arguments:
+    pkg_path: '%PKG%'
+    repo_subdirectory: '%MUNKI_REPO_SUBDIR%'
