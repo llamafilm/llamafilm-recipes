@@ -22,12 +22,6 @@ Process:
 - Processor: Copier
   Arguments:
     source_path: '%RECIPE_CACHE_DIR%/unpack/*/node_exporter'
-    destination_path: '%pkgroot%/root/usr/local/bin/node_exporter-%version%'
-    overwrite: true
-
-- Processor: Symlinker
-  Arguments:
-    source_path: 'node_exporter-%version%'
     destination_path: '%pkgroot%/root/usr/local/bin/node_exporter'
     overwrite: true
 
@@ -45,6 +39,7 @@ Process:
     file_content: |
       #!/bin/sh
       launchctl unload /Library/LaunchDaemons/com.prometheus.node-exporter.plist 2>/dev/null
+      exit 0
     file_mode: '0755'
 
 - Processor: FileCreator
@@ -83,7 +78,7 @@ Process:
       - path: Library/LaunchDaemons/com.prometheus.node-exporter.plist
         group: wheel
         user: root
-      - path: usr/local/bin/node_exporter-%version%
+      - path: usr/local/bin/node_exporter
         group: wheel
         user: root
         mode: '0755'

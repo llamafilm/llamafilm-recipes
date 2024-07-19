@@ -18,6 +18,10 @@ Input:
       #!/bin/sh
       launchctl load /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
       launchctl load /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
+    preinstall_script: |
+      #!/bin/sh
+      launchctl unload /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
+      launchctl unload /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
     uninstall_script: |
       #!/bin/sh
       rm -rf /Applications/XAMPP

@@ -3,21 +3,28 @@ MinimumVersion: 2.3.0
 ParentRecipe: com.llamafilm.pkg.node_exporter
 
 Input:
-  ARCH: arm64
-  MUNKI_REPO_SUBDIR: apps
   NAME: node_exporter
+  MUNKI_REPO_SUBDIR: apps
+  ARCH: arm64
+  SUPPORTED_ARCH: arm64
   pkginfo:
+    blocking_applications: []
     catalogs:
     - testing
-    category: Observability
+    category: Engineering
     description: Prometheus exporter for machine metrics
     developer: Prometheus
     display_name: Prometheus Node Exporter
     icon_name: Prometheus
-    name: '%NAME%-%ARCH%'
+    name: '%NAME%'
+    preuninstall_script: |
+      #!/bin/sh
+      launchctl unload -w /Library/LaunchDaemons/com.prometheus.node-exporter.plist 2>/dev/null
+      exit 0
     supported_architectures:
-    - '%ARCH%'
+    - '%SUPPORTED_ARCH%'
     unattended_install: true
+    unattended_uninstall: true
 
 Process:
 - Processor: MunkiImporter
