@@ -1,0 +1,26 @@
+Identifier: com.llamafilm.munki.node_exporter
+MinimumVersion: 2.3.0
+ParentRecipe: com.llamafilm.pkg.node_exporter
+
+Input:
+  ARCH: arm64
+  MUNKI_REPO_SUBDIR: apps
+  NAME: node_exporter
+  pkginfo:
+    catalogs:
+    - testing
+    category: Observability
+    description: Prometheus exporter for machine metrics
+    developer: Prometheus
+    display_name: Prometheus Node Exporter
+    icon_name: Prometheus
+    name: '%NAME%-%ARCH%'
+    supported_architectures:
+    - '%ARCH%'
+    unattended_install: true
+
+Process:
+- Processor: MunkiImporter
+  Arguments:
+    pkg_path: '%RECIPE_CACHE_DIR%/node_exporter-%version%-%ARCH%.pkg'
+    repo_subdirectory: '%MUNKI_REPO_SUBDIR%'

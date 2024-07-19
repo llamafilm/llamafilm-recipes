@@ -1,0 +1,90 @@
+Description: Packages node_exporter with a LaunchDaemon
+Identifier: com.llamafilm.pkg.node_exporter
+MinimumVersion: 2.3.0
+ParentRecipe: com.llamafilm.download.node_exporter
+
+Input:
+  ARCH: arm64
+  NAME: node_exporter
+
+Process:
+- Processor: PkgRootCreator
+  Arguments:
+    pkgdirs:
+      root/usr: '0755'
+      root/usr/local: '0755'
+      root/usr/local/bin: '0755'
+      root/Library: '0755'
+      root/Library/LaunchDaemons: '0755'
+      scripts: '0755'
+    pkgroot: '%RECIPE_CACHE_DIR%/payload'
+
+- Processor: Copier
+  Arguments:
+    source_path: '%RECIPE_CACHE_DIR%/unpack/*/node_exporter'
+    destination_path: '%pkgroot%/root/usr/local/bin/node_exporter-%version%'
+    overwrite: true
+
+- Processor: Symlinker
+  Arguments:
+    source_path: 'node_exporter-%version%'
+    destination_path: '%pkgroot%/root/usr/local/bin/node_exporter'
+    overwrite: true
+
+- Processor: FileCreator
+  Arguments:
+    file_path: '%pkgroot%/scripts/postinstall'
+    file_content: |
+      #!/bin/sh
+      launchctl load /Library/LaunchDaemons/com.prometheus.node-exporter.plist
+    file_mode: '0755'
+
+- Processor: FileCreator
+  Arguments:
+    file_path: '%pkgroot%/scripts/preinstall'
+    file_content: |
+      #!/bin/sh
+      launchctl unload /Library/LaunchDaemons/com.prometheus.node-exporter.plist 2>/dev/null
+    file_mode: '0755'
+
+- Processor: FileCreator
+  Arguments:
+    file_path: '%pkgroot%/root/Library/LaunchDaemons/com.prometheus.node-exporter.plist'
+    file_content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>GroupName</key>
+        <string>nobody</string>
+        <key>KeepAlive</key>
+        <true/>
+        <key>Label</key>
+        <string>com.prometheus.node-exporter</string>
+        <key>ProgramArguments</key>
+        <array>
+          <string>/usr/local/bin/node_exporter</string>
+        </array>
+        <key>UserName</key>
+        <string>nobody</string>
+      </dict>
+      </plist>
+    file_mode: '0644'
+
+- Processor: PkgCreator
+  Arguments:
+    pkg_request:
+      pkgroot: '%pkgroot%/root'
+      pkgdir: '%RECIPE_CACHE_DIR%'
+      pkgname: 'node_exporter-%version%-%ARCH%'
+      id: 'com.prometheus.node-exporter'
+      version: '%version%'
+      chown:
+      - path: Library/LaunchDaemons/com.prometheus.node-exporter.plist
+        group: wheel
+        user: root
+      - path: usr/local/bin/node_exporter-%version%
+        group: wheel
+        user: root
+        mode: '0755'
+      scripts: '%pkgroot%/scripts'

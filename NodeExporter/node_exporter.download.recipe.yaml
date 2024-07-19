@@ -1,0 +1,23 @@
+Description: Downloads the latest version of Prometheus Node Exporter
+Identifier: com.llamafilm.download.node_exporter
+MinimumVersion: 2.3.0
+
+Input:
+  ARCH: arm64
+  NAME: node_exporter
+
+Process:
+- Processor: GitHubReleasesInfoProvider
+  Arguments:
+    github_repo: prometheus/node_exporter
+    asset_regex: node_exporter-.+\.darwin-%ARCH%.tar.gz
+    latest_only: true
+
+- Processor: URLDownloader
+
+- Processor: Unarchiver
+  Arguments:
+    destination_path: '%RECIPE_CACHE_DIR%/unpack'
+    purge_destination: true
+
+- Processor: EndOfCheckPhase
