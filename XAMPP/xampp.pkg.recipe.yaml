@@ -1,15 +1,10 @@
 Description: |
   Package the latest version of XAMPP.
-  Available choices for COMPONENTS are either:
-  - xampp_core_files
-  - xampp_developer_files
-  - xampp_core_files,xampp_developer_files
 Identifier: com.llamafilm.pkg.xampp
 MinimumVersion: 2.3.0
 ParentRecipe: com.llamafilm.download.xampp
 
 Input:
-  COMPONENTS: xampp_core_files
   NAME: XAMPP
 
 Process:
@@ -17,6 +12,8 @@ Process:
   Arguments:
     pkgdirs:
       root/private/tmp: '0777'
+      root/Library: '0755'
+      root/Library/LaunchDaemons: '0755'
       scripts: '0755'
     pkgroot: '%RECIPE_CACHE_DIR%/payload'
 
@@ -31,18 +28,76 @@ Process:
     file_content: |
       #!/bin/sh
       echo "Installing XAMPP..."
-      /private/tmp/xampp-osx-%version%-installer.app/Contents/MacOS/osx-x86_64 --mode unattended --enable-components %COMPONENTS%
-      chmod 644 /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
-      chmod 644 /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
+      /private/tmp/xampp-osx-%version%-installer.app/Contents/MacOS/osx-x86_64 --mode unattended --unattendedmodeui minimal
     file_mode: '0755'
     file_path: '%RECIPE_CACHE_DIR%/payload/scripts/postinstall'
+
+- Processor: FileCreator
+  Comment: Make LaunchDaemon plist for apache
+  Arguments:
+    file_content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>Label</key>
+          <string>org.apachefriends.xampp.apache</string>
+        <key>ProgramArguments</key>
+          <array>
+            <string>/Applications/XAMPP/xamppfiles/xampp</string>
+            <string>startapache</string>
+        </array>
+        <key>RunAtLoad</key>
+          <true/>
+        <key>AbandonProcessGroup</key>
+          <true/>
+        <key>LaunchOnlyOnce</key>
+          <true/>
+        </dict>
+      </plist>
+    file_mode: '0644'
+    file_path: '%RECIPE_CACHE_DIR%/payload/root/Library/LaunchDaemons/org.apachefriends.xampp.apache.plist'
+
+- Processor: FileCreator
+  Comment: Make LaunchDaemon plist for mysql
+  Arguments:
+    file_content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>Label</key>
+          <string>org.apachefriends.xampp.mysql</string>
+        <key>ProgramArguments</key>
+          <array>
+            <string>/Applications/XAMPP/xamppfiles/xampp</string>
+            <string>startmysql</string>
+        </array>
+        <key>RunAtLoad</key>
+          <true/>
+        <key>AbandonProcessGroup</key>
+          <true/>
+        <key>LaunchOnlyOnce</key>
+          <true/>
+        </dict>
+      </plist>
+    file_mode: '0644'
+    file_path: '%RECIPE_CACHE_DIR%/payload/root/Library/LaunchDaemons/org.apachefriends.xampp.mysql.plist'
 
 - Processor: PkgCreator
   Arguments:
     pkg_request:
       id: org.apachefriends.xampp
+      chown:
+      - path: Library/LaunchDaemons/org.apachefriends.xampp.apache.plist
+        user: root
+        group: wheel
+      - path: Library/LaunchDaemons/org.apachefriends.xampp.mysql.plist
+        user: root
+        group: wheel
       options: purge_ds_store
       pkgname: '%NAME%-%version%'
-      pkgroot: '%RECIPE_CACHE_DIR%/payload/root'
+      pkgroot: '%pkgroot%/root'
       scripts: '%RECIPE_CACHE_DIR%/payload/scripts'
       version: '%version%'
+    force_pkg_build: true # temporary

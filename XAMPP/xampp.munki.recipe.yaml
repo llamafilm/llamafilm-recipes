@@ -4,29 +4,32 @@ MinimumVersion: 2.3.0
 ParentRecipe: com.llamafilm.pkg.xampp
 
 Input:
-  COMPONENTS: xampp_core_files
-  MUNKI_REPO_SUBDIR: apps
   NAME: XAMPP
+  MUNKI_REPO_SUBDIR: apps
   pkginfo:
     catalogs:
     - testing
-    description: An easy to install Apache distribution containing MySQL, PHP, and Perl.
+    category: Engineering
+    description: An easy to install Apache distribution containing MariaDB, PHP, and Perl. 
     developer: Apache Friends
     display_name: XAMPP
+    icon_name: XAMPP
     name: '%NAME%'
     postinstall_script: |
       #!/bin/sh
-      launchctl load /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
-      launchctl load /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
-    preinstall_script: |
-      #!/bin/sh
-      launchctl unload /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
-      launchctl unload /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
-    uninstall_script: |
+      launchctl bootstrap system /Library/LaunchDaemons/org.apachefriends.xampp.apache.plist || true
+      launchctl bootstrap system /Library/LaunchDaemons/org.apachefriends.xampp.mysql.plist || true
+    postuninstall_script: |
       #!/bin/sh
       rm -rf /Applications/XAMPP
-      rm -rf /Library/LaunchDaemons/apachefriends.xampp.apache.start.plist
-      rm -rf /Library/LaunchDaemons/apachefriends.xampp.mysql.start.plist
+    preinstall_script: |
+      #!/bin/sh
+      launchctl bootout system /Library/LaunchDaemons/org.apachefriends.xampp.apache.plist 2>/dev/null || true
+      launchctl bootout system /Library/LaunchDaemons/org.apachefriends.xampp.mysql.plist 2>/dev/null || true
+    preuninstall_script: |
+      #!/bin/sh
+      launchctl bootout system /Library/LaunchDaemons/org.apachefriends.xampp.apache.plist 2>/dev/null || true
+      launchctl bootout system /Library/LaunchDaemons/org.apachefriends.xampp.mysql.plist 2>/dev/null || true
     unattended_install: true
     unattended_uninstall: true
 
