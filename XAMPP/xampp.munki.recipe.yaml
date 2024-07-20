@@ -7,6 +7,8 @@ Input:
   NAME: XAMPP
   MUNKI_REPO_SUBDIR: apps
   pkginfo:
+    blocking_applications:
+    - manager-osx.app
     catalogs:
     - testing
     category: Engineering
