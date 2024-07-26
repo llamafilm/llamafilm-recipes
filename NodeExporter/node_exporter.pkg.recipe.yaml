@@ -1,4 +1,4 @@
-Description: Packages node_exporter with a LaunchDaemon
+Description: Packages node_exporter with a LaunchDaemon. Extra ProgramArguments may be added to the LaunchDaemon using the input variable
 Identifier: com.llamafilm.pkg.node_exporter
 MinimumVersion: 2.3.0
 ParentRecipe: com.llamafilm.download.node_exporter
@@ -6,7 +6,8 @@ ParentRecipe: com.llamafilm.download.node_exporter
 Input:
   ARCH: arm64
   NAME: node_exporter
-
+  PROGRAMARGUMENTS: |-
+    <string>/usr/local/bin/node_exporter</string>
 Process:
 - Processor: PkgRootCreator
   Arguments:
@@ -58,7 +59,7 @@ Process:
         <string>com.prometheus.node-exporter</string>
         <key>ProgramArguments</key>
         <array>
-          <string>/usr/local/bin/node_exporter</string>
+          %PROGRAMARGUMENTS%
         </array>
         <key>UserName</key>
         <string>nobody</string>
