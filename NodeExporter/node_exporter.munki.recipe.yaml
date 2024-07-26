@@ -19,7 +19,7 @@ Input:
     name: '%NAME%'
     preuninstall_script: |
       #!/bin/sh
-      launchctl unload -w /Library/LaunchDaemons/com.prometheus.node-exporter.plist 2>/dev/null
+      launchctl unload -w /Library/LaunchDaemons/io.prometheus.node-exporter.plist 2>/dev/null
       exit 0
     supported_architectures:
     - '%SUPPORTED_ARCH%'

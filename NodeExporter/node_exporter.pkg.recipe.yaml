@@ -31,7 +31,7 @@ Process:
     file_path: '%pkgroot%/scripts/postinstall'
     file_content: |
       #!/bin/sh
-      launchctl load /Library/LaunchDaemons/com.prometheus.node-exporter.plist
+      launchctl load /Library/LaunchDaemons/io.prometheus.node-exporter.plist
     file_mode: '0755'
 
 - Processor: FileCreator
@@ -39,13 +39,13 @@ Process:
     file_path: '%pkgroot%/scripts/preinstall'
     file_content: |
       #!/bin/sh
-      launchctl unload /Library/LaunchDaemons/com.prometheus.node-exporter.plist 2>/dev/null
+      launchctl unload /Library/LaunchDaemons/io.prometheus.node-exporter.plist 2>/dev/null
       exit 0
     file_mode: '0755'
 
 - Processor: FileCreator
   Arguments:
-    file_path: '%pkgroot%/root/Library/LaunchDaemons/com.prometheus.node-exporter.plist'
+    file_path: '%pkgroot%/root/Library/LaunchDaemons/io.prometheus.node-exporter.plist'
     file_content: |
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -56,7 +56,7 @@ Process:
         <key>KeepAlive</key>
         <true/>
         <key>Label</key>
-        <string>com.prometheus.node-exporter</string>
+        <string>io.prometheus.node-exporter</string>
         <key>ProgramArguments</key>
         <array>
           %PROGRAMARGUMENTS%
@@ -73,10 +73,10 @@ Process:
       pkgroot: '%pkgroot%/root'
       pkgdir: '%RECIPE_CACHE_DIR%'
       pkgname: 'node_exporter-%version%-%ARCH%'
-      id: 'com.prometheus.node-exporter'
+      id: 'io.prometheus.node-exporter'
       version: '%version%'
       chown:
-      - path: Library/LaunchDaemons/com.prometheus.node-exporter.plist
+      - path: Library/LaunchDaemons/io.prometheus.node-exporter.plist
         group: wheel
         user: root
       - path: usr/local/bin/node_exporter
