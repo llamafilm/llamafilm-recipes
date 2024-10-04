@@ -1,0 +1,23 @@
+Description: Downloads the latest version of Grafana Alloy. ARCH can be either arm64 or amd64.
+Identifier: com.llamafilm.download.grafana_alloy
+MinimumVersion: 2.3.0
+
+Input:
+  ARCH: arm64
+  NAME: grafana_alloy
+
+Process:
+- Processor: GitHubReleasesInfoProvider
+  Arguments:
+    github_repo: grafana/alloy
+    asset_regex: alloy-darwin-%ARCH%.zip
+    latest_only: true
+
+- Processor: URLDownloader
+
+- Processor: Unarchiver
+  Arguments:
+    destination_path: '%RECIPE_CACHE_DIR%/unpack'
+    purge_destination: true
+
+- Processor: EndOfCheckPhase

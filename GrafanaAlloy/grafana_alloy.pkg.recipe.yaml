@@ -1,0 +1,104 @@
+Description: |
+  Packages Grafana Alloy with a LaunchDaemon and config file which must be located
+  next to the recipe.
+Identifier: com.llamafilm.pkg.grafana_alloy
+MinimumVersion: 2.3.0
+ParentRecipe: com.llamafilm.download.grafana_alloy
+
+Input:
+  ARCH: arm64
+  NAME: grafana_alloy
+  CONFIG_FILE: config
+Process:
+- Processor: PkgRootCreator
+  Arguments:
+    pkgdirs:
+      root/Library: '0755'
+      root/Library/LaunchDaemons: '0755'
+      root/Library/GrafanaAlloy: '0755'
+      root/Library/GrafanaAlloy/data: '0755'
+      root/usr: '0755'
+      root/usr/local: '0755'
+      root/usr/local/bin: '0755'
+      scripts: '0755'
+    pkgroot: '%RECIPE_CACHE_DIR%/payload'
+
+- Processor: Copier
+  Arguments:
+    source_path: '%RECIPE_CACHE_DIR%/unpack/alloy-darwin-%ARCH%'
+    destination_path: '%pkgroot%/root/usr/local/bin/grafana_alloy'
+    overwrite: true
+
+- Processor: Copier
+  Arguments:
+    source_path: '%RECIPE_DIR%/%CONFIG_FILE%.alloy'
+    destination_path: '%pkgroot%/root/Library/GrafanaAlloy/%CONFIG_FILE%.alloy'
+    overwrite: true
+
+- Processor: FileCreator
+  Arguments:
+    file_path: '%pkgroot%/scripts/postinstall'
+    file_content: |
+      #!/bin/sh
+      /bin/launchctl load /Library/LaunchDaemons/com.grafana.alloy.plist 2>/dev/null
+    file_mode: '0755'
+
+- Processor: FileCreator
+  Arguments:
+    file_path: '%pkgroot%/scripts/preinstall'
+    file_content: |
+      #!/bin/sh
+      /bin/launchctl unload /Library/LaunchDaemons/com.grafana.alloy.plist 2>/dev/null
+      exit 0
+    file_mode: '0755'
+
+- Processor: FileCreator
+  Arguments:
+    file_path: '%pkgroot%/root/Library/LaunchDaemons/com.grafana.alloy.plist'
+    file_content: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+          <key>KeepAlive</key>
+          <true/>
+          <key>Label</key>
+          <string>com.grafana.alloy</string>
+          <key>ProgramArguments</key>
+          <array>
+              <string>/usr/local/bin/grafana_alloy</string>
+              <string>run</string>
+              <string>/Library/GrafanaAlloy/%CONFIG_FILE%.alloy</string>
+              <string>--storage.path</string>
+              <string>/Library/GrafanaAlloy/data</string>
+          </array>
+      </dict>
+      </plist>
+    file_mode: '0644'
+
+- Processor: PkgCreator
+  Arguments:
+    pkg_request:
+      pkgroot: '%pkgroot%/root'
+      scripts: '%pkgroot%/scripts'
+      pkgdir: '%RECIPE_CACHE_DIR%'
+      pkgname: 'grafana_alloy-%version%-%ARCH%'
+      id: 'com.grafana.alloy'
+      version: '%version%'
+      chown:
+      - path: usr/local/bin/grafana_alloy
+        group: wheel
+        user: root
+        mode: '0755'
+      - path: Library/LaunchDaemons/com.grafana.alloy.plist
+        group: wheel
+        user: root
+      - path: Library/GrafanaAlloy
+        group: wheel
+        user: root
+      - path: Library/GrafanaAlloy/data
+        group: wheel
+        user: root
+      - path: Library/GrafanaAlloy/%CONFIG_FILE%.alloy
+        group: wheel
+        user: root
