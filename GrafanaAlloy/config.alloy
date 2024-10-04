@@ -1,5 +1,0 @@
-//// example config ////
-logging {
-  level  = "debug"
-  format = "logfmt"
-}
