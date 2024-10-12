@@ -1,6 +1,5 @@
 Description: |
-  Packages Grafana Alloy with a LaunchDaemon. Config files should be added separately
-  to /Library/GrafanaAlloy/config.d/.
+  Packages Grafana Alloy with a LaunchDaemon and a minimal config file.
 Identifier: com.llamafilm.pkg.grafana_alloy
 MinimumVersion: 2.3.0
 ParentRecipe: com.llamafilm.download.grafana_alloy
@@ -15,7 +14,6 @@ Process:
       root/Library: '0755'
       root/Library/LaunchDaemons: '0755'
       root/Library/GrafanaAlloy: '0755'
-      root/Library/GrafanaAlloy/config.d: '0755'
       root/Library/GrafanaAlloy/data: '0755'
       root/usr: '0755'
       root/usr/local: '0755'
@@ -39,7 +37,7 @@ Process:
 
 - Processor: FileCreator
   Arguments:
-    file_path: '%pkgroot%/root/Library/GrafanaAlloy/config.d/config.alloy'
+    file_path: '%pkgroot%/root/Library/GrafanaAlloy/config.alloy'
     file_content: |
       logging {
         level  = "debug"
@@ -72,7 +70,7 @@ Process:
           <array>
               <string>/usr/local/bin/grafana_alloy</string>
               <string>run</string>
-              <string>/Library/GrafanaAlloy/config.d/</string>
+              <string>/Library/GrafanaAlloy/config.alloy</string>
               <string>--storage.path</string>
               <string>/Library/GrafanaAlloy/data</string>
           </array>
@@ -101,8 +99,5 @@ Process:
         group: wheel
         user: root
       - path: Library/GrafanaAlloy/data
-        group: wheel
-        user: root
-      - path: Library/GrafanaAlloy/config.d
         group: wheel
         user: root
