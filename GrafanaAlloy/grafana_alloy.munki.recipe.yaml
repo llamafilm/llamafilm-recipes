@@ -11,6 +11,7 @@ Input:
     blocking_applications: []
     catalogs:
     - testing
+    - stable
     category: Engineering
     description: Grafana Alloy agent for collecting metrics and logs. Config files should be added to /Library/GrafanaAlloy/config.d.
     developer: Grafana
