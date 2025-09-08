@@ -6,9 +6,8 @@ Input:
   NAME: grafana_alloy
   MUNKI_REPO_SUBDIR: apps
   ALLOY_CONFIG: |
-    logging {
-      level  = "info"
-      format = "logfmt"
+    local.file "local_context" {
+      filename = "/Library/GrafanaAlloy/local_context.json"
     }
   GCLOUD_RW_API_KEY: ''
   ARCH: arm64
@@ -19,7 +18,7 @@ Input:
     - testing
     - stable
     category: Engineering
-    description: Grafana Alloy agent for collecting metrics and logs. Config files should be added to /Library/GrafanaAlloy/config.d.
+    description: Grafana Alloy agent for collecting metrics and logs. Configure using Grafana Cloud Fleet Management.
     developer: Grafana
     display_name: Grafana Alloy
     name: '%NAME%'
