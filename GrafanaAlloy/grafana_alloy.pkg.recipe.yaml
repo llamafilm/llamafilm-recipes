@@ -1,5 +1,7 @@
 Description: |
   Packages Grafana Alloy with a LaunchDaemon and a minimal config file.
+  Also writes the Mac serial to a JSON file that can be used in the Alloy config.
+  Override the ALLOY_CONFIG file contents and GCLOUD_RW_API_KEY for Fleet Management.
 Identifier: com.llamafilm.pkg.grafana_alloy
 MinimumVersion: 2.3.0
 ParentRecipe: com.llamafilm.download.grafana_alloy
@@ -7,6 +9,11 @@ ParentRecipe: com.llamafilm.download.grafana_alloy
 Input:
   ARCH: arm64
   NAME: grafana_alloy
+  ALLOY_CONFIG: |
+    local.file "local_context" {
+      filename = "/Library/GrafanaAlloy/local_context.json"
+    }
+  GCLOUD_RW_API_KEY: ''
 Process:
 - Processor: PkgRootCreator
   Arguments:
@@ -32,17 +39,16 @@ Process:
     file_path: '%pkgroot%/scripts/postinstall'
     file_content: |
       #!/bin/sh
+      # Write the Mac serial to JSON file for optional use as a label or attribute
+      SERIAL=$(ioreg -rd1 -c IOPlatformExpertDevice | grep IOPlatformSerialNumber | cut -d '"' -f4)
+      echo "{\"serial\": \"$SERIAL\"}" > /Library/GrafanaAlloy/local_context.json
       /bin/launchctl load /Library/LaunchDaemons/com.grafana.alloy.plist 2>/dev/null
     file_mode: '0755'
 
 - Processor: FileCreator
   Arguments:
     file_path: '%pkgroot%/root/Library/GrafanaAlloy/config.alloy'
-    file_content: |
-      logging {
-        level  = "debug"
-        format = "logfmt"
-      }
+    file_content: '%ALLOY_CONFIG%'
     file_mode: '0644'
 
 - Processor: FileCreator
@@ -74,6 +80,11 @@ Process:
               <string>--storage.path</string>
               <string>/Library/GrafanaAlloy/data</string>
           </array>
+          <key>EnvironmentVariables</key>
+          <dict>
+              <key>GCLOUD_RW_API_KEY</key>
+              <string>%GCLOUD_RW_API_KEY%</string>
+          </dict>
       </dict>
       </plist>
     file_mode: '0644'
