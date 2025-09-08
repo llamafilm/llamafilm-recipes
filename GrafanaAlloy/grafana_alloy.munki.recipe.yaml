@@ -21,6 +21,7 @@ Input:
     description: Grafana Alloy agent for collecting metrics and logs. Configure using Grafana Cloud Fleet Management.
     developer: Grafana
     display_name: Grafana Alloy
+    minimum_os_version: 10.13
     name: '%NAME%'
     supported_architectures:
     - '%SUPPORTED_ARCH%'
