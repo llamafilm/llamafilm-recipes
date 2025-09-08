@@ -5,6 +5,12 @@ ParentRecipe: com.llamafilm.pkg.grafana_alloy
 Input:
   NAME: grafana_alloy
   MUNKI_REPO_SUBDIR: apps
+  ALLOY_CONFIG: |
+    logging {
+      level  = "info"
+      format = "logfmt"
+    }
+  GCLOUD_RW_API_KEY: ''
   ARCH: arm64
   SUPPORTED_ARCH: arm64
   pkginfo:

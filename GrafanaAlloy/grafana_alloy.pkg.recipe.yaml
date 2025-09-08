@@ -1,5 +1,6 @@
 Description: |
   Packages Grafana Alloy with a LaunchDaemon and a minimal config file.
+  Override the ALLOY_CONFIG file contents and GCLOUD_RW_API_KEY for Fleet Management.
 Identifier: com.llamafilm.pkg.grafana_alloy
 MinimumVersion: 2.3.0
 ParentRecipe: com.llamafilm.download.grafana_alloy
@@ -7,6 +8,12 @@ ParentRecipe: com.llamafilm.download.grafana_alloy
 Input:
   ARCH: arm64
   NAME: grafana_alloy
+  ALLOY_CONFIG: |
+    logging {
+      level  = "info"
+      format = "logfmt"
+    }
+  GCLOUD_RW_API_KEY: ''
 Process:
 - Processor: PkgRootCreator
   Arguments:
@@ -38,11 +45,7 @@ Process:
 - Processor: FileCreator
   Arguments:
     file_path: '%pkgroot%/root/Library/GrafanaAlloy/config.alloy'
-    file_content: |
-      logging {
-        level  = "debug"
-        format = "logfmt"
-      }
+    file_content: '%ALLOY_CONFIG%'
     file_mode: '0644'
 
 - Processor: FileCreator
@@ -74,6 +77,11 @@ Process:
               <string>--storage.path</string>
               <string>/Library/GrafanaAlloy/data</string>
           </array>
+          <key>EnvironmentVariables</key>
+          <dict>
+              <key>GCLOUD_RW_API_KEY</key>
+              <string>%GCLOUD_RW_API_KEY%</string>
+          </dict>
       </dict>
       </plist>
     file_mode: '0644'
