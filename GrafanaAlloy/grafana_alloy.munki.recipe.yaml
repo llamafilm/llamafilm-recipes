@@ -16,7 +16,6 @@ Input:
     blocking_applications: []
     catalogs:
     - testing
-    - stable
     category: Engineering
     description: Grafana Alloy agent for collecting metrics and logs. Configure using Grafana Cloud Fleet Management.
     developer: Grafana
